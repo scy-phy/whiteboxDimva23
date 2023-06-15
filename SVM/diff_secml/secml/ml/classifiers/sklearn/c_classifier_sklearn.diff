@@ -1,0 +1,45 @@
+11c11
+< 
+---
+> import numpy as np
+98,102c98,119
+< 
+<         if hasattr(sklearn_model, 'classes_'):  # Model is pretrained
+<             self._classes = CArray(sklearn_model.classes_)
+<             # FIXME: how to obtain this from pretrained models?
+<             self._n_features = 0
+---
+>         self.alpha = None
+>         if hasattr(sklearn_model, 'fit_status_'):  # Model is pretrained
+>             if type(sklearn_model).__name__ == 'OneClassSVM':
+>                 self._classes = CArray(np.ndarray((2,), buffer=np.array([-1,1])))
+>                 self._n_features = 6
+>                 self.w = CArray(sklearn_model.coef_)
+>                 #print(self.w)
+>                 # n_rows = self.n_classes if self.n_classes > 2 else 1
+>                 # n_cols = 6
+>                 # self.alpha = CArray.zeros(shape=(n_rows, n_cols), sparse=True)
+>                 # print(self.alpha.shape)
+>                 # sv_idx = CArray(sklearn_model.support_).ravel()
+>                 # print(sv_idx)
+>                 # print(sv_idx.shape)
+>                 # self.alpha[sv_idx] = CArray(sklearn_model.dual_coef_)
+>                 # print(self.alpha)
+>             else:
+>                 
+>                 self._classes = CArray(sklearn_model.classes_)
+>                 # FIXME: how to obtain this from pretrained models?
+>                 self._n_features = 0
+>             self.fit_status_ = CArray(sklearn_model.fit_status_)
+153,154c170,177
+<         raise NotImplementedError(
+<             "`_backward` is not implemented for this generic sklearn wrapper.")
+---
+>         # raise NotImplementedError(
+>         #     "`_backward` is not implemented for this generic sklearn wrapper.")
+>         v = self.w #if self.kernel is None else self.alpha
+>         if self.n_classes > 2:
+>             return w.dot(v)
+>         else:
+>             return w[0] * -v + w[1] * v
+> 
