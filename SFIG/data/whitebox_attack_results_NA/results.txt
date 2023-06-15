@@ -1,0 +1,8 @@
+actual 1: 53900  0: 396018
+predict 1: 6  0: 449912
+precision: 0.0
+recall: 0.0
+f1score: nan
+accuracy: 0.8801870563080384
+TPR: 0.0
+FPR: 1.5150826477584352e-05
